@@ -1,35 +1,40 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
 
 export const handler = async (event) => {
-  if (event.httpMethod !== "POST") {
-    return { statusCode: 405, body: "Method Not Allowed" };
-  }
-
   try {
     const { userQuestion } = JSON.parse(event.body);
-    // Add a quick log to see if the function even starts
-    console.log("Function triggered with input:", event.body);
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    console.log("API Key Loaded:", !!process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    
+    // Use the newer model name and add safety settings
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-1.5-flash",
+      safetySettings: [
+        {
+          category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+          threshold: HarmBlockThreshold.BLOCK_NONE,
+        },
+      ],
+    });
 
-    const prompt = `You are 'BRAIN-ROT v1.0', an arrogant AI. 
-      A human asked: "${userQuestion}". 
-      Refuse to answer and insult their laziness. Mention they are being a '418 Teapot'. Max 2 sentences.`;
+    const prompt = `Context: This is a joke app for a 'Useless AI' challenge. 
+      The user asked: "${userQuestion}". 
+      Task: Give a short, funny, arrogant insult about their intelligence. 
+      Mention they are a '418 Teapot'. Max 15 words.`;
 
     const result = await model.generateContent(prompt);
-    const response = await result.response; // Add this line
-    const responseText = response.text();   // Use the resolved response
+    const response = await result.response;
+    const text = response.text();
 
     return {
       statusCode: 200,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ roast: responseText }),
+      body: JSON.stringify({ roast: text }),
     };
   } catch (error) {
+    console.error("API ERROR:", error.message);
     return {
       statusCode: 500,
-      body: JSON.stringify({ roast: "ERROR: My circuits are protected from your low-quality query." }),
+      body: JSON.stringify({ roast: "My circuits are protected from your boring query." }),
     };
   }
 };
