@@ -28,9 +28,9 @@ Larry Masinter saw this coming. We just built the compliance portal.
 
 ## What I Built: HTCPCP/1.0 Compliance Terminal
 
-**[🫖 LIVE DEMO →](https://claude.ai/chat/your-deploy-link-here)**
+**[🫖 LIVE DEMO →](https://brain-rot-eliminator-b5u435ncr-shreyjaradis-projects.vercel.app/)**
 
-**[💻 Source Code →](https://claude.ai/chat/your-github-link-here)**
+**[💻 Source Code →](https://github.com/Shreyjaradi/brain-rot-eliminator)**
 
 A biometric government security terminal that uses AI to determine your **Teapot Quotient (TQ%)** — a proprietary metric measuring how likely you are to be a teapot in violation of RFC 2324 §2.3.2.
 
@@ -136,7 +136,7 @@ This one's for you, Larry.
 
 ## Try It
 
-**[🫖 LIVE DEMO →](https://claude.ai/chat/your-deploy-link-here)**
+**[🫖 LIVE DEMO →](https://brain-rot-eliminator-b5u435ncr-shreyjaradis-projects.vercel.app/)**
 
 Open it. Introduce yourself. Defend your humanity. You will lose.
 
