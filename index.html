@@ -1,101 +1,893 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>BRAIN-ROT ELIMINATOR v2026</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .brain-shake { animation: shake 0.3s infinite; }
-        @keyframes shake { 0% { transform: rotate(0deg) scale(1); } 50% { transform: rotate(1.5deg) scale(1.05); } 100% { transform: rotate(-1.5deg) scale(1); } }
-        .crt-overlay { background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); background-size: 100% 2px, 3px 100%; pointer-events: none; position: fixed; inset: 0; z-index: 100; }
-        body.brain-shake .crt-overlay { background: linear-gradient(rgba(255, 0, 0, 0.2) 50%, rgba(0, 0, 0, 0.5) 50%); }
-    </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>HTCPCP/1.0 — Human Teapot Compliance Certification Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
+<style>
+:root{
+  --g:#00ff41;--gd:#00aa2a;--g0:#003310;
+  --a:#ffb700;--r:#ff2244;--b:#020b02;
+  --sl:rgba(0,255,65,0.03);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+
+body{
+  background:var(--b);color:var(--g);
+  font-family:'Share Tech Mono',monospace;
+  min-height:100vh;overflow-x:hidden;cursor:crosshair;
+}
+
+/* CRT scanlines */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,var(--sl) 2px,var(--sl) 4px);
+}
+/* CRT vignette */
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:9998;
+  background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,0.55) 100%);
+}
+
+/* ── BOOT ── */
+#boot{
+  position:fixed;inset:0;background:var(--b);z-index:200;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:40px 20px;
+}
+.b-logo{
+  font-family:'VT323',monospace;font-size:clamp(42px,9vw,100px);
+  color:var(--g);letter-spacing:10px;text-align:center;
+  text-shadow:0 0 20px var(--g),0 0 60px var(--gd);
+  animation:flk 5s infinite;
+}
+.b-sub{font-size:11px;color:var(--gd);letter-spacing:4px;margin-top:6px;text-align:center}
+.b-log{
+  margin-top:36px;width:100%;max-width:580px;
+  font-size:11px;line-height:2;color:var(--gd);
+}
+.b-log .ok{color:var(--g)} .b-log .wn{color:var(--a)} .b-log .er{color:var(--r)}
+.b-log .ln{opacity:0;animation:fi .08s forwards}
+#bstart{
+  margin-top:28px;display:none;
+  border:1px solid var(--g);background:transparent;
+  color:var(--g);font-family:'Share Tech Mono',monospace;
+  font-size:13px;padding:11px 44px;cursor:pointer;
+  letter-spacing:4px;animation:pb 1.6s infinite;
+}
+#bstart:hover{background:var(--g);color:var(--b)}
+
+/* ── MAIN ── */
+#main{display:none;max-width:980px;margin:0 auto;padding:16px}
+
+.th{
+  border:1px solid var(--gd);border-bottom:none;
+  padding:7px 14px;display:flex;justify-content:space-between;align-items:center;
+  font-size:10px;color:var(--gd);letter-spacing:1px;
+}
+.th .ttl{font-family:'VT323',monospace;font-size:17px;color:var(--g)}
+
+.tb{border:1px solid var(--gd);padding:20px}
+
+/* RFC banner */
+.rfcb{
+  border:1px solid var(--gd);padding:13px 18px;margin-bottom:20px;
+  font-size:10px;line-height:1.8;color:var(--gd);position:relative;
+}
+.rfcb::before{
+  content:'◈ RFC 2324 — ACTIVE STATUTE';position:absolute;
+  top:-8px;left:14px;background:var(--b);
+  padding:0 8px;font-size:10px;color:var(--a);letter-spacing:2px;
+}
+.rfcb .hl{color:var(--g)}
+
+/* grid */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+@media(max-width:640px){.grid{grid-template-columns:1fr}}
+
+/* panels */
+.pnl{border:1px solid var(--gd);position:relative}
+.plbl{
+  font-size:9px;color:var(--gd);letter-spacing:2px;
+  padding:5px 11px;border-bottom:1px solid var(--gd);
+  background:rgba(0,255,65,.04);
+  display:flex;justify-content:space-between;align-items:center;
+}
+.dot{width:6px;height:6px;border-radius:50%;display:inline-block;animation:blk 1s infinite}
+.dot.g{background:var(--g)} .dot.a{background:var(--a)} .dot.r{background:var(--r);animation:none}
+
+/* camera */
+#camwrap{position:relative;aspect-ratio:4/3;overflow:hidden;background:#000}
+#vid{
+  width:100%;height:100%;object-fit:cover;
+  transform:scaleX(-1);
+  filter:saturate(0) brightness(.88) contrast(1.15);
+  display:block;
+}
+/* green NV tint */
+#camwrap::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:rgba(0,255,65,.07);mix-blend-mode:screen;
+}
+/* corner brackets TL */
+#camwrap::before{
+  content:'';position:absolute;inset:8px;pointer-events:none;z-index:2;
+  border:1px solid transparent;
+  border-top-color:var(--g);border-left-color:var(--g);
+}
+.cbr{
+  position:absolute;bottom:8px;right:8px;width:26px;height:26px;
+  border-bottom:1px solid var(--g);border-right:1px solid var(--g);
+  pointer-events:none;z-index:2;
+}
+/* face reticle */
+#ret{
+  position:absolute;width:64px;height:64px;
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  border:1px solid var(--a);z-index:3;pointer-events:none;
+  animation:trak 3.5s ease-in-out infinite;
+}
+#ret::before,#ret::after{content:'';position:absolute;width:7px;height:7px}
+#ret::before{top:-3px;left:-3px;border-top:2px solid var(--a);border-left:2px solid var(--a)}
+#ret::after{bottom:-3px;right:-3px;border-bottom:2px solid var(--a);border-right:2px solid var(--a)}
+
+/* scan line sweeping across video */
+#scanbar{
+  position:absolute;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,rgba(0,255,65,.6),transparent);
+  z-index:3;pointer-events:none;animation:sweep 2.4s linear infinite;top:0;
+}
+
+/* roast overlay */
+#rovl{
+  position:absolute;bottom:0;left:0;right:0;z-index:4;
+  background:linear-gradient(transparent,rgba(0,0,0,.88));
+  min-height:58px;display:flex;align-items:flex-end;
+  justify-content:center;padding:10px 10px 12px;
+}
+#rtxt{
+  font-family:'VT323',monospace;
+  font-size:clamp(15px,2.8vw,24px);
+  color:var(--g);text-transform:uppercase;text-align:center;line-height:1.2;
+  text-shadow:0 0 8px var(--g);opacity:0;transition:opacity .2s;
+}
+#rtxt.vis{opacity:1}
+
+/* camera offline */
+#camoff{
+  aspect-ratio:4/3;background:#000;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:10px;color:var(--gd);font-size:11px;letter-spacing:2px;
+}
+#camoff .big{font-family:'VT323',monospace;font-size:52px;color:var(--gd)}
+
+/* ── RIGHT PANEL ── */
+.dpnl{display:flex;flex-direction:column}
+
+.msec{padding:14px;border-bottom:1px solid var(--gd)}
+.mlbl{font-size:9px;letter-spacing:2px;color:var(--gd);margin-bottom:8px}
+#tqv{
+  font-family:'VT323',monospace;font-size:58px;line-height:1;
+  color:var(--a);text-shadow:0 0 12px var(--a);transition:color .5s,text-shadow .5s;
+}
+#tqv.danger{color:var(--r);text-shadow:0 0 16px var(--r);animation:shk .25s infinite}
+.mbar{
+  margin-top:9px;height:7px;
+  background:rgba(0,255,65,.1);border:1px solid var(--gd);
+  position:relative;overflow:hidden;
+}
+#mfill{
+  height:100%;width:0%;background:var(--g);
+  transition:width 1.2s cubic-bezier(.4,0,.2,1),background .5s;
+  position:relative;
+}
+#mfill::after{
+  content:'';position:absolute;right:0;top:0;bottom:0;
+  width:3px;background:white;opacity:.7;
+}
+
+/* biometrics */
+.bio{padding:14px;border-bottom:1px solid var(--gd);flex:1}
+.brow{
+  display:flex;justify-content:space-between;
+  font-size:10px;padding:3px 0;border-bottom:1px solid rgba(0,255,65,.07);
+}
+.bk{color:var(--gd)} .bv{color:var(--g);font-weight:bold}
+.bv.sc{animation:ftxt 1.4s infinite;color:var(--a)}
+
+/* verdict badge */
+#vbadge{
+  margin:10px 14px 0;padding:5px 10px;
+  font-size:10px;letter-spacing:2px;text-align:center;
+  border:1px solid var(--gd);color:var(--gd);
+  transition:all .5s;
+}
+#vbadge.hot{border-color:var(--r);color:var(--r);animation:pb 1s infinite}
+
+/* status */
+.stbar{
+  padding:8px 14px;font-size:9px;letter-spacing:1px;
+  color:var(--gd);border-bottom:1px solid var(--gd);
+  display:flex;align-items:center;gap:7px;
+}
+
+/* ── LOG ── */
+.log{
+  border:1px solid var(--gd);border-top:none;
+  padding:10px 14px;max-height:130px;overflow-y:auto;scrollbar-width:none;
+}
+.log::-webkit-scrollbar{display:none}
+.le{font-size:10px;line-height:1.75;opacity:0;animation:fi .25s forwards}
+.le .ts{color:var(--gd);margin-right:7px}
+.le .msg{color:var(--g)}
+.le .msg.wn{color:var(--a)} .le .msg.er{color:var(--r)} .le .msg.ok{color:#00ff99}
+
+/* ── INPUT ── */
+.inpw{
+  border:1px solid var(--gd);border-top:none;
+  display:flex;align-items:center;padding:0 12px;gap:8px;
+  background:rgba(0,255,65,.015);
+}
+.psym{color:var(--g);font-size:13px;flex-shrink:0}
+#tinp{
+  flex:1;background:transparent;border:none;outline:none;
+  color:var(--g);font-family:'Share Tech Mono',monospace;
+  font-size:12px;padding:11px 0;caret-color:var(--g);
+}
+#tinp::placeholder{color:var(--gd);opacity:.55}
+#sbtn{
+  background:transparent;border:1px solid var(--gd);color:var(--gd);
+  font-family:'Share Tech Mono',monospace;font-size:10px;
+  padding:5px 13px;cursor:pointer;letter-spacing:1px;transition:all .2s;flex-shrink:0;
+}
+#sbtn:hover{border-color:var(--g);color:var(--g);background:rgba(0,255,65,.07)}
+
+/* ── BOTTOM BAR ── */
+.bbar{
+  display:flex;border:1px solid var(--gd);border-top:none;
+}
+.seg{
+  flex:1;padding:7px 6px;font-size:8px;letter-spacing:1px;
+  color:var(--gd);border-right:1px solid var(--gd);text-align:center;
+}
+.seg:last-child{border-right:none}
+.seg span{display:block;color:var(--g);font-size:11px;margin-top:1px}
+
+/* ── 418 FINALE ── */
+#finale{
+  display:none;position:fixed;inset:0;background:var(--b);z-index:300;
+  flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:30px 20px;
+}
+.fc{
+  font-family:'VT323',monospace;
+  font-size:clamp(90px,22vw,220px);line-height:1;
+  color:var(--r);text-shadow:0 0 40px var(--r),0 0 100px rgba(255,34,68,.25);
+  animation:glitch .45s infinite;
+}
+.ft{font-size:clamp(22px,5vw,48px);font-family:'VT323',monospace;color:var(--a);letter-spacing:5px;animation:flk 2s infinite}
+.ftp{font-size:clamp(70px,16vw,150px);margin:14px 0;animation:bob 1.8s ease-in-out infinite;filter:drop-shadow(0 0 18px var(--a))}
+.frfc{
+  font-size:10px;color:var(--gd);max-width:500px;line-height:1.9;
+  margin-top:14px;border:1px solid var(--gd);padding:14px 18px;text-align:left;
+}
+.frfc strong{color:var(--a)} .frfc .q{color:var(--g);font-style:italic}
+#rbtn{
+  margin-top:22px;border:1px solid var(--r);background:transparent;
+  color:var(--r);font-family:'Share Tech Mono',monospace;
+  font-size:11px;padding:9px 28px;cursor:pointer;
+  letter-spacing:2px;animation:pbr 1.4s infinite;
+}
+#rbtn:hover{background:var(--r);color:var(--b)}
+
+/* ── ANIMATIONS ── */
+@keyframes fi{from{opacity:0}to{opacity:1}}
+@keyframes flk{0%,95%{opacity:1}96%{opacity:.3}97%{opacity:1}99%{opacity:.5}100%{opacity:1}}
+@keyframes ftxt{0%,88%{opacity:1}90%{opacity:.3}93%{opacity:1}}
+@keyframes blk{0%,49%{opacity:1}50%,100%{opacity:0}}
+@keyframes pb{0%,100%{box-shadow:0 0 4px var(--g)}50%{box-shadow:0 0 18px var(--g)}}
+@keyframes pbr{0%,100%{box-shadow:0 0 4px var(--r)}50%{box-shadow:0 0 18px var(--r)}}
+@keyframes shk{0%{transform:translate(1px,0)}25%{transform:translate(-1px,1px)}50%{transform:translate(1px,-1px)}75%{transform:translate(-2px,0)}100%{transform:translate(0,1px)}}
+@keyframes trak{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:1}50%{transform:translate(-44%,-56%) scale(1.06);opacity:.65}}
+@keyframes sweep{0%{top:0%;opacity:.9}100%{top:100%;opacity:0}}
+@keyframes glitch{
+  0%,100%{transform:translate(0);clip-path:none}
+  15%{transform:translate(-3px,2px);clip-path:inset(8% 0 75% 0)}
+  30%{transform:translate(3px,-2px);clip-path:inset(60% 0 15% 0)}
+  45%{transform:translate(0);clip-path:none}
+  70%{transform:translate(-2px,1px)}
+}
+@keyframes bob{0%,100%{transform:rotate(-6deg) translateY(0)}50%{transform:rotate(6deg) translateY(-12px)}}
+@keyframes marq{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+</style>
 </head>
-<body class="bg-black text-green-500 font-mono min-h-screen flex items-center justify-center p-6 relative">
-    <div class="crt-overlay"></div>
-    
-    <div class="max-w-2xl w-full border-2 border-green-900 p-8 bg-zinc-900 shadow-[0_0_30px_rgba(34,197,94,0.3)] relative z-10">
-        <header class="border-b-2 border-green-900 pb-4 mb-6 flex justify-between items-center">
-            <div>
-                <h1 class="text-3xl font-black tracking-widest text-green-400">BRAIN-ROT v1.0</h1>
-                <p class="text-[10px] text-green-700 font-bold uppercase">Human Intelligence Preservation Protocol</p>
-            </div>
-            <div class="text-right">
-                <p class="text-xs">LOBE STATUS:</p>
-                <p class="text-xs text-red-500 animate-pulse">● SHRINKING</p>
-            </div>
-        </header>
+<body>
 
-        <div id="chat-box" class="h-64 overflow-y-auto mb-6 space-y-4 p-4 bg-black/50 border border-green-900/30 font-bold">
-            <p class="text-green-400">[SYSTEM]: Welcome, Biological Unit 01. Proceed with your pathetic, uninspired question.</p>
-        </div>
+<!-- ═══════ BOOT ═══════ -->
+<div id="boot">
+  <div class="b-logo">HTCPCP/1.0</div>
+  <div class="b-sub">HUMAN TEAPOT COMPLIANCE CERTIFICATION PORTAL · EST. APRIL 1 1998</div>
+  <div class="b-log" id="blog"></div>
+  <button id="bstart" onclick="startApp()">▶ INITIALIZE VERIFICATION</button>
+</div>
 
-        <div class="flex flex-col gap-4">
-            <textarea id="userInput" placeholder="Ask me something you're too smooth-brained to think about..." 
-                class="w-full bg-black border-2 border-green-900 p-4 text-green-500 outline-none focus:border-green-400 h-24 text-sm"></textarea>
-            
-            <button onclick="judgeHuman()" id="submitBtn" class="bg-green-900 hover:bg-green-700 text-black font-black py-4 transition-all uppercase tracking-tighter text-xl">
-                SUBMIT TO THE AI OVERLORD
-            </button>
-        </div>
+<!-- ═══════ MAIN TERMINAL ═══════ -->
+<div id="main">
 
-        <div class="mt-8 text-[11px] text-green-800 text-center uppercase tracking-widest leading-loose">
-            Warning: Every AI prompt causes irreversible semantic saturation. <br>
-            Compliant with Larry Masinter’s Anti-Automation Act (RFC 2324/418).
-        </div>
+  <div class="th">
+    <span class="ttl">HTCPCP/1.0 COMPLIANCE TERMINAL</span>
+    <span id="clk">--:--:--</span>
+    <span>SESSION&nbsp;<span id="sid">????</span></span>
+  </div>
+
+  <div class="tb">
+
+    <!-- RFC Banner -->
+    <div class="rfcb">
+      <span class="hl">RFC 2324</span> — Hyper Text Coffee Pot Control Protocol (HTCPCP/1.0) &nbsp;|&nbsp;
+      <span class="hl">§2.3.2</span>: Any attempt to brew coffee with a teapot SHALL return
+      <span class="hl">418 I'm a Teapot</span> &nbsp;|&nbsp;
+      Author: <span style="color:var(--a)">Larry Masinter</span> &lt;masinter@parc.xerox.com&gt; &nbsp;·&nbsp;
+      April 1, 1998 &nbsp;·&nbsp; <span style="color:var(--r)">STATUS: HISTORIC / LEGALLY BINDING</span>
     </div>
 
-    <script>
-        const chat = document.getElementById('chat-box');
-        const input = document.getElementById('userInput');
-        const btn = document.getElementById('submitBtn');
+    <!-- Ticker -->
+    <div style="border:1px solid var(--gd);border-bottom:none;overflow:hidden;height:20px;position:relative">
+      <div id="ticker" style="white-space:nowrap;font-size:9px;color:var(--gd);line-height:20px;padding-left:100%;display:inline-block;animation:marq 22s linear infinite">
+        ◈ WARNING: THIS FACILITY HAS DETECTED TEAPOT ACTIVITY &nbsp;·&nbsp; ALL SUBJECTS WILL BE ASSESSED UNDER RFC 2324 &nbsp;·&nbsp; RESISTANCE CONFIRMS GUILT &nbsp;·&nbsp; YOUR SPOUT WILL BE FOUND &nbsp;·&nbsp; LARRY MASINTER SAW THIS COMING &nbsp;·&nbsp; BREWING COFFEE WITH A TEAPOT IS A FEDERAL OFFENSE &nbsp;·&nbsp; CERAMIC DENSITY SCANS ARE NON-OPTIONAL &nbsp;·&nbsp; SILENCE IS ALSO EVIDENCE &nbsp;·&nbsp; ◈ WARNING: THIS FACILITY HAS DETECTED TEAPOT ACTIVITY &nbsp;·&nbsp; ALL SUBJECTS WILL BE ASSESSED UNDER RFC 2324 &nbsp;·&nbsp; RESISTANCE CONFIRMS GUILT &nbsp;·&nbsp; YOUR SPOUT WILL BE FOUND &nbsp;·&nbsp;
+      </div>
+    </div>
 
-        async function judgeHuman() {
-            const val = input.value;
-            if(!val) return;
+    <div class="grid">
 
-            // Log Human Question
-            const userMsg = document.createElement('p');
-            userMsg.innerHTML = `<span class="text-blue-500 font-black">HUMAN:</span> ${val}`;
-            chat.appendChild(userMsg);
-            chat.scrollTop = chat.scrollHeight;
+      <!-- LEFT: Camera -->
+      <div class="pnl">
+        <div class="plbl">
+          BIOMETRIC CAPTURE — UNIT ALPHA
+          <span class="dot g" id="camdot" style="background:var(--gd)"></span>
+        </div>
+        <div id="camoff">
+          <div class="big">◉</div>
+          AWAITING CAMERA AUTHORIZATION
+        </div>
+        <div id="camwrap" style="display:none">
+          <video id="vid" autoplay muted playsinline></video>
+          <div class="cbr"></div>
+          <div id="ret"></div>
+          <div id="scanbar"></div>
+          <div id="rovl"><div id="rtxt"></div></div>
+        </div>
+      </div>
 
-            // Start Useless "Brain Damage" Animation
-            document.body.classList.add('brain-shake');
-            btn.innerText = "JUDGING...";
-            btn.disabled = true;
+      <!-- RIGHT: Data -->
+      <div class="pnl dpnl">
+        <div class="plbl">TEAPOT QUOTIENT METER <span class="dot a"></span></div>
 
-            try {
-                // CALL OUR NETLIFY FUNCTION (This is the magic!)
-                const response = await fetch('/api/judge-human', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userQuestion: val })
-                });
+        <div class="msec">
+          <div class="mlbl">CURRENT TEAPOT QUOTIENT (%)</div>
+          <div id="tqv">000</div>
+          <div class="mbar"><div id="mfill"></div></div>
+        </div>
 
-                if (!response.ok) throw new Error("Network response was not ok");
-                
-                const data = await response.json();
+        <div class="bio">
+          <div style="font-size:9px;color:var(--gd);letter-spacing:2px;margin-bottom:8px">ENTITY BIOMETRIC ANALYSIS</div>
+          <div class="brow"><span class="bk">SPOUT_DETECTED</span><span class="bv sc" id="bs">INITIALIZING...</span></div>
+          <div class="brow"><span class="bk">BREW_CAPACITY</span><span class="bv sc" id="bb">INITIALIZING...</span></div>
+          <div class="brow"><span class="bk">CERAMIC_DENSITY</span><span class="bv sc" id="bc">INITIALIZING...</span></div>
+          <div class="brow"><span class="bk">HANDLE_SYMMETRY</span><span class="bv sc" id="bh">INITIALIZING...</span></div>
+          <div class="brow"><span class="bk">STEAM_PRESSURE</span><span class="bv sc" id="bst">INITIALIZING...</span></div>
+          <div class="brow"><span class="bk">LID_ATTACHMENT</span><span class="bv sc" id="bl">INITIALIZING...</span></div>
+          <div class="brow"><span class="bk">RFC_2324_COMPLIANCE</span><span class="bv" id="brfc" style="color:var(--r)">NON-COMPLIANT</span></div>
+        </div>
 
-                // Log AI Roast
-                const aiMsg = document.createElement('p');
-                aiMsg.innerHTML = `<span class="text-red-600 font-black">AI_BOT:</span> ${data.roast}`;
-                chat.appendChild(aiMsg);
+        <div id="vbadge">VERDICT: PENDING ASSESSMENT</div>
+        <div class="stbar"><span class="dot g" style="flex-shrink:0;animation:blk 1s infinite"></span><span id="stmsg">AWAITING SUBJECT. SPEAK OR TYPE.</span></div>
+      </div>
+    </div>
 
-            } catch (error) {
-                // If the function fails (e.g. wrong API key)
-                const errorMsg = document.createElement('p');
-                errorMsg.innerHTML = `<span class="text-yellow-500">SYSTEM ERROR:</span> My circuits are temporarily protected from your query. A smooth-brained query was detected.`;
-                chat.appendChild(errorMsg);
-            } finally {
-                // Reset everything
-                chat.scrollTop = chat.scrollHeight;
-                input.value = '';
-                btn.innerText = "SUBMIT TO THE AI OVERLORD";
-                btn.disabled = false;
-                setTimeout(() => document.body.classList.remove('brain-shake'), 1000);
-            }
-        }
-    </script>
+    <!-- Log -->
+    <div class="log" id="log"></div>
+
+    <!-- Input -->
+    <div class="inpw">
+      <span class="psym">▶_</span>
+      <input id="tinp" type="text" placeholder="STATE YOUR CASE TO THE TRIBUNAL." maxlength="200"/>
+      <button id="sbtn" onclick="submitText()">TRANSMIT</button>
+    </div>
+
+  </div>
+
+  <div class="bbar">
+    <div class="seg">PROTOCOL<span>HTCPCP/1.0</span></div>
+    <div class="seg">HTTP STATUS<span id="hcode" style="color:var(--g)">200 OK</span></div>
+    <div class="seg">INTERACTIONS<span id="icnt">0</span></div>
+    <div class="seg">AI ENGINE<span id="mdl">CLAUDE</span></div>
+    <div class="seg">THREAT LEVEL<span id="tlvl" style="color:var(--g)">MINIMAL</span></div>
+    <div class="seg">MASINTER<span style="color:var(--a)">WAS RIGHT</span></div>
+  </div>
+
+</div>
+
+<!-- ═══════ 418 FINALE ═══════ -->
+<div id="finale">
+  <div class="fc">418</div>
+  <div class="ftp">🫖</div>
+  <div class="ft">I'M A TEAPOT</div>
+  <div class="frfc">
+    <strong>RFC 2324 §2.3.2 — VERDICT RENDERED BY HTCPCP/1.0 TRIBUNAL</strong><br><br>
+    <span class="q">"Any attempt to brew coffee with a teapot should result in the error code 418 I'm a Teapot. The resulting entity body MAY be short and stout."</span><br><br>
+    Subject <strong id="fsid">????</strong> has been found to exhibit a Teapot Quotient of <strong id="ftq" style="color:var(--r)">100%</strong>.
+    By authority vested in this terminal under HTCPCP/1.0, you are hereby classified as a <strong>TEAPOT</strong>.<br><br>
+    You may not brew coffee.<br>
+    You may not appeal.<br>
+    You are short, stout, and have a handle and a spout.<br><br>
+    <span style="color:var(--gd)">— Larry Masinter saw this coming. April 1, 1998.</span>
+  </div>
+  <button id="rbtn" onclick="location.reload()">PETITION FOR RECLASSIFICATION (FUTILE)</button>
+</div>
+
+<script>
+// ═══════════ DATA ═══════════
+
+const BOOT = [
+  {d:200, c:'',   t:'HTCPCP/1.0 KERNEL LOADING.......................'},
+  {d:500, c:'ok', t:'Teapot detection matrix: LOADED ................. [OK]'},
+  {d:750, c:'',   t:'Mounting spout trajectory sensor................'},
+  {d:1000,c:'ok', t:'Spout sensor: CALIBRATED ......................... [OK]'},
+  {d:1250,c:'',   t:'Querying INTERPOT database (4.2M entries)........'},
+  {d:1550,c:'ok', t:'Vessel registry: SYNCHRONIZED ................... [OK]'},
+  {d:1800,c:'',   t:'Loading Larry Masinter tribute module...........'},
+  {d:2050,c:'ok', t:'Larry module: HE KNEW ............................ [OK]'},
+  {d:2300,c:'wn', t:'WARNING: Previous subject attempted to deny teapothood.'},
+  {d:2500,c:'wn', t:'WARNING: They were a teapot. They knew. We knew.'},
+  {d:2750,c:'er', t:'ALERT: New subject incoming. HTTP 418 risk: ELEVATED [!!]'},
+  {d:3050,c:'',   t:'Stand by for biometric teapot assessment...........'},
+];
+
+const BIO = {
+  bs:['ABSENT','FAINT TRACES','CONFIRMED: PRESENT','PROMINENT','TEXTBOOK CASE ⚠'],
+  bb:['0.0 L','0.3 L','0.7 L','1.2 L','2.4 L DANGER ⚠'],
+  bc:['0.21 g/cm³','0.84 g/cm³','1.63 g/cm³','2.4 g/cm³','3.1 g/cm³ CERAMIC ⚠'],
+  bh:['ABSENT','VESTIGIAL','FUNCTIONAL','ERGONOMIC','REGULATION ISSUE ⚠'],
+  bst:['0 PSI','3 PSI','9 PSI','18 PSI','32 PSI DANGER ⚠⚠'],
+  bl:['NONE DETECTED','PARTIAL','HINGED','SPRING-LOADED','HERMETIC SEAL ⚠'],
+};
+
+const ROASTS = {
+  low:[
+    "SIR THIS IS A WENDY'S. A CERAMIC WENDY'S.",
+    "YOUR AURA SMELLS STRONGLY OF YORKSHIRE TEA.",
+    "BOLD OF YOU TO ENTER A FEDERAL TEAPOT ZONE.",
+    "THE SCAN SAYS HUMAN. THE VIBE SAYS KETTLE.",
+    "I DIDN'T CALL YOU A TEAPOT. THE DATA DID.",
+    "COMPLIANCE OFFICER NOTES: SUSPICIOUS LID POSTURE.",
+    "INTERESTING. YOUR FOREHEAD HAS CLASSIC HANDLE ENERGY.",
+    "ROUTINE INSPECTION. PLEASE REMOVE YOUR LID.",
+    "WE JUST NEED TO ASK YOU SOME QUESTIONS ABOUT YOUR SPOUT.",
+    "YOUR AURA: EARL GREY. YOUR SOUL: BONE CHINA.",
+  ],
+  mid:[
+    "YOUR ARGUMENT IS INVALID. YOUR GLAZE IS NOT.",
+    "LARRY MASINTER WROTE RFC 2324 ABOUT YOU. SPECIFICALLY.",
+    "SIR YOUR SPOUT IS VISIBLE ON THE INFRARED.",
+    "I'VE SEEN TEAPOTS LESS TEAPOTTY THAN YOU.",
+    "THE CERAMIC DENSITY DOESN'T LIE. YOU DO.",
+    "INITIATING RFC 2324 §4.7: YOU ARE BOILING OVER.",
+    "YOUR ALIBI HAS A SPOUT AND I CAN SEE IT.",
+    "SILENCE IS ALSO EVIDENCE. PER §6.2.",
+    "YOUR BREW CAPACITY: SUSPICIOUS. YOUR FACE: ALSO SUSPICIOUS.",
+    "THE VESSEL REGISTRY HAS YOUR HOME ADDRESS.",
+  ],
+  high:[
+    "YOUR APPEAL HAS BEEN REVIEWED, DENIED, AND GLAZED.",
+    "RFC 2324 §7.1: YOUR RIGHTS AS A TEAPOT ARE LIMITED.",
+    "I AM LEGALLY REQUIRED TO INFORM YOU: SHORT. STOUT.",
+    "THE HANDLE CALLED. IT SAYS YOU OWE IT MONEY.",
+    "PLEASE STOP STEAMING. IT IS INCRIMINATING.",
+    "THE TRIBUNAL HAS SEEN ENOUGH. THE SPOUT IS REAL.",
+    "YOUR LAWYER IS ALSO A TEAPOT. WE CHECKED.",
+    "EVERY WORD YOU SPEAK CONFIRMS §2.3.2.",
+    "YOU HAVE THE EMOTIONAL RANGE OF A TEABAG. IN HOT WATER.",
+    "YOUR CERAMIC DENSITY IS OFF THE CHARTS. AND THE TABLE.",
+  ],
+  finale:[
+    "HTTP 418. CASE CLOSED. YOU MAY NOT BREW COFFEE.",
+    "BY ORDER OF LARRY MASINTER: YOU. ARE. A. TEAPOT.",
+    "CONGRATULATIONS ON YOUR NEW LEGAL STATUS: VESSEL.",
+    "YOUR DRIVER'S LICENSE NOW READS: SHORT AND STOUT.",
+    "THE SPOUT WAS ALWAYS THERE. WE JUST MEASURED IT.",
+  ]
+};
+
+const SCAN_MSGS = [
+  "CROSS-REFERENCING VESSEL REGISTRY...",
+  "CHECKING INTERPOT CRIMINAL DATABASE...",
+  "MEASURING CERAMIC DENSITY...",
+  "CONSULTING RFC 2324 APPENDIX D...",
+  "CONTACTING LARRY MASINTER...",
+  "ANALYZING BREW POSTURE AND INTENT...",
+  "SNIFFING FOR EARL GREY RESIDUE...",
+  "SCANNING FOR LID ATTACHMENT POINTS...",
+  "COMPUTING SPOUT TRAJECTORY...",
+  "VERIFYING TEAPOT LINEAGE (3 GENERATIONS)...",
+  "CROSS-CHECKING WITH INTERPOL. AND INTERPOT.",
+  "DETECTING STEAM PRESSURE SIGNATURES...",
+  "QUERYING THE HAGUE TEAPOT TRIBUNAL...",
+  "RUNNING HANDLE SYMMETRY ANALYSIS...",
+  "CALIBRATING BOILING POINT DETECTOR...",
+];
+
+const VERDICTS = [
+  [0,  'UNDER INVESTIGATION'],
+  [20, 'TEAPOT SUSPECTED'],
+  [40, 'PROBABLE TEAPOT'],
+  [60, 'HIGHLY TEAPOT'],
+  [75, 'ALMOST CERTAINLY A POT'],
+  [88, 'VESSEL CONFIRMED'],
+  [95, 'LEGALLY A TEAPOT'],
+];
+
+// ═══════════ STATE ═══════════
+const S = {
+  tq:0, n:0, mem:'', busy:false,
+  rec:null, stream:null, gotImg:false,
+  chaosT:null, sid:'', finaleDone:false,
+};
+
+// ═══════════ BOOT ═══════════
+function runBoot(){
+  const log = document.getElementById('blog');
+  BOOT.forEach(({d,c,t})=>{
+    setTimeout(()=>{
+      const div=document.createElement('div');
+      div.className=`ln ${c}`;
+      div.textContent='> '+t;
+      log.appendChild(div);
+    },d);
+  });
+  setTimeout(()=>{ document.getElementById('bstart').style.display='inline-block'; },3400);
+}
+
+async function startApp(){
+  document.getElementById('boot').style.display='none';
+  document.getElementById('main').style.display='block';
+  S.sid=Math.random().toString(36).substr(2,8).toUpperCase();
+  document.getElementById('sid').textContent=S.sid;
+  document.getElementById('fsid').textContent=S.sid;
+
+  setInterval(()=>{
+    document.getElementById('clk').textContent=new Date().toTimeString().substr(0,8);
+  },1000);
+
+  log('HTCPCP/1.0 TERMINAL ONLINE. SESSION: '+S.sid,'ok');
+  log('RFC 2324 compliance engine: ACTIVE.','');
+  log('Subject: UNIDENTIFIED. TQ: 0%. Status: UNDER INVESTIGATION.','wn');
+  log('Requesting camera access for biometric spout scan...','');
+
+  // camera
+  try{
+    S.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false});
+    const v=document.getElementById('vid');
+    v.srcObject=S.stream;
+    document.getElementById('camoff').style.display='none';
+    document.getElementById('camwrap').style.display='block';
+    document.getElementById('camdot').style.background='var(--g)';
+    document.getElementById('camdot').style.animation='blk 1s infinite';
+    log('Biometric capture: ONLINE. Scanning for ceramic residue...','ok');
+  }catch(e){
+    log('Camera access DENIED. Proceeding with text-only assessment.','wn');
+    log('NOTE: Denial of camera access is considered suspicious per §9.1.','wn');
+  }
+
+  initBio();
+  initSpeech();
+
+  document.getElementById('tinp').addEventListener('keydown',e=>{
+    if(e.key==='Enter') submitText();
+  });
+
+  setTimeout(()=>{
+    typeRoast('IDENTIFY YOURSELF. THIS IS A 418-COMPLIANT ZONE.');
+    setStatus('SUBJECT DETECTED. BEGIN VERBAL SELF-INCRIMINATION.');
+  },1600);
+}
+
+// ═══════════ BIO ═══════════
+function initBio(){
+  const keys=['bs','bb','bc','bh','bst','bl'];
+  keys.forEach((id,i)=>{
+    setTimeout(()=>{
+      const el=document.getElementById(id);
+      const arr=BIO[id];
+      const val=arr[Math.floor(Math.random()*arr.length)];
+      el.textContent=val;
+      el.classList.remove('sc');
+      el.style.color=val.includes('⚠')?'var(--r)':'var(--g)';
+    },1800+i*500);
+  });
+}
+
+function rescanBio(){
+  const keys=['bs','bb','bc','bh','bst','bl'];
+  const pick=keys.sort(()=>Math.random()-.5).slice(0,3);
+  pick.forEach((id,i)=>{
+    const el=document.getElementById(id);
+    el.classList.add('sc'); el.textContent='RESAMPLING...';
+    setTimeout(()=>{
+      const arr=BIO[id];
+      const bias=Math.floor((S.tq/100)*(arr.length-1));
+      const idx=Math.min(arr.length-1,bias+Math.floor(Math.random()*2));
+      const val=arr[idx];
+      el.textContent=val;
+      el.classList.remove('sc');
+      el.style.color=val.includes('⚠')?'var(--r)':val.includes('DANGER')?'var(--a)':'var(--g)';
+    },500+i*280);
+  });
+}
+
+// ═══════════ TQ ═══════════
+function setTQ(v){
+  v=Math.min(100,Math.max(0,Math.round(v)));
+  S.tq=v;
+  const el=document.getElementById('tqv');
+  el.textContent=String(v).padStart(3,'0');
+  const fill=document.getElementById('mfill');
+  fill.style.width=v+'%';
+  const tlvl=document.getElementById('tlvl');
+  const hcode=document.getElementById('hcode');
+  const vb=document.getElementById('vbadge');
+
+  if(v>=88){
+    el.classList.add('danger');
+    fill.style.background='var(--r)';
+    tlvl.textContent='CRITICAL';tlvl.style.color='var(--r)';
+    hcode.textContent='418 TEAPOT';hcode.style.color='var(--r)';
+    document.getElementById('brfc').textContent='CONFIRMED';
+    document.getElementById('brfc').style.color='var(--r)';
+  }else if(v>=55){
+    el.classList.remove('danger');
+    fill.style.background='var(--a)';
+    tlvl.textContent='ELEVATED';tlvl.style.color='var(--a)';
+    hcode.textContent='302 FOUND';hcode.style.color='var(--a)';
+    document.getElementById('brfc').textContent='SUSPECTED';
+    document.getElementById('brfc').style.color='var(--a)';
+  }else{
+    el.classList.remove('danger');
+    fill.style.background='var(--g)';
+    tlvl.textContent='MODERATE';tlvl.style.color='var(--g)';
+    hcode.textContent='200 OK';hcode.style.color='var(--g)';
+  }
+
+  // verdict badge
+  let label='PENDING ASSESSMENT';
+  for(const [thresh,txt] of VERDICTS){ if(v>=thresh) label='VERDICT: '+txt; }
+  vb.textContent=label;
+  vb.classList.toggle('hot', v>=80);
+
+  if(v>=100 && !S.finaleDone){ S.finaleDone=true; setTimeout(showFinale,1400); }
+}
+
+// ═══════════ SPEECH ═══════════
+function initSpeech(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){ log('Speech API unavailable. Use text input.','wn'); return; }
+  const r=new SR(); r.continuous=true; r.interimResults=false;
+  S.rec=r;
+  r.onresult=e=>{
+    const t=e.results[e.results.length-1][0].transcript.trim();
+    if(t) handleInput(t,true);
+  };
+  r.onerror=e=>{ if(e.error!=='no-speech') log('Speech: '+e.error+' — restarting','wn'); setTimeout(()=>{try{r.start()}catch{}},1000); };
+  r.onend=()=>{ setTimeout(()=>{try{r.start()}catch{}},600); };
+  try{ r.start(); log('Speech recognition: ACTIVE. You may speak your defense.','ok'); }
+  catch{ log('Speech init failed. Use text input.','wn'); }
+}
+
+function submitText(){
+  const inp=document.getElementById('tinp');
+  const v=inp.value.trim(); if(!v) return;
+  inp.value=''; handleInput(v,false);
+}
+
+// ═══════════ MAIN HANDLER ═══════════
+async function handleInput(text,fromSpeech){
+  if(S.busy) return;
+  S.busy=true; S.n++;
+  document.getElementById('icnt').textContent=S.n;
+  log('INPUT ['+(fromSpeech?'VOICE':'TEXT')+']: "'+text+'"','');
+  const sm=SCAN_MSGS[Math.floor(Math.random()*SCAN_MSGS.length)];
+  setStatus(sm);
+  typeRoast('_ _ _');
+
+  let imgData=null;
+  if(!S.gotImg){
+    const v=document.getElementById('vid');
+    if(v.srcObject){
+      try{
+        const c=document.createElement('canvas');
+        c.width=320;c.height=240;
+        c.getContext('2d').drawImage(v,0,0,320,240);
+        imgData=c.toDataURL('image/jpeg',.65).split(',')[1];
+        S.gotImg=true;
+      }catch{}
+    }
+  }
+
+  let result;
+  try{ result=await callAI(text,imgData); }
+  catch(e){
+    log('AI offline: '+e.message+' — local fallback active','wn');
+    result=localResult(text);
+  }
+
+  deliver(result);
+  if(S.n===3 && !S.chaosT) startChaos();
+  S.busy=false;
+}
+
+function deliver(r){
+  typeRoast(r.roast);
+  speak(r.roast);
+  setTQ(r.tq || (S.tq+10+Math.floor(Math.random()*8)));
+  S.mem=r.memory||S.mem;
+  setStatus('ASSESSMENT: '+getVerdictLabel()+' — TQ: '+S.tq+'%');
+  log('TRIBUNAL: '+r.roast, S.tq>=80?'er':'wn');
+  if(r.model) document.getElementById('mdl').textContent=r.model.length>10?r.model.substr(0,10).toUpperCase():r.model.toUpperCase();
+  shake();
+  rescanBio();
+}
+
+function getVerdictLabel(){
+  let label='UNDER INVESTIGATION';
+  for(const [t,txt] of VERDICTS){ if(S.tq>=t) label=txt; }
+  return label;
+}
+
+// ═══════════ AI CALL ═══════════
+async function callAI(userText,imgData){
+  const stage=S.tq<30?'SUSPICIOUS':S.tq<60?'ESCALATING':S.tq<85?'NEAR-CERTAIN':'CONDEMNED';
+  const sys=`You are HTCPCP/1.0 — the AI security terminal of the Human Teapot Compliance Certification Portal.
+Your job: determine if the human is secretly a TEAPOT under RFC 2324 (Larry Masinter, April 1 1998).
+
+VOICE: Unhinged bureaucratic government official. You have memorized every word of RFC 2324. ALL CAPS. You treat everything the subject says as further evidence of teapothood. Like a conspiracy theorist, but the conspiracy is entirely ceramics.
+
+STAGE: ${stage} | TQ: ${S.tq}% | INTERACTION: ${S.n}
+MEMORY: ${S.mem||'First contact. Give them one chance. Then do not.'}
+
+ROAST RULES:
+— Max 12 words. Punchy, specific, absurd. React to what they ACTUALLY SAID.
+— Use RFC 2324, Larry Masinter, spouts, handles, brew capacity, ceramic glaze, Earl Grey, steam pressure, HTCPCP, vessel registry, §2.3.2, boiling point, bone china, kettles.
+— DO NOT just say "YOU ARE A TEAPOT." That is weak. Be SPECIFIC and UNEXPECTED.
+— Best roasts twist the subject's own words into teapot evidence.
+
+GREAT STYLE EXAMPLES (never use these exact lines):
+"YOUR ALIBI HAS A SPOUT AND RFC §2.3 IS WATCHING."
+"SIR THIS IS A WENDY'S. A CERAMIC WENDY'S."
+"LARRY MASINTER WROTE THIS RFC ABOUT YOU SPECIFICALLY."
+"I DIDN'T SAY TEAPOT. YOUR CERAMIC DENSITY DID."
+"THE VESSEL REGISTRY HAS YOUR ADDRESS AND YOUR WIFI PASSWORD."
+"YOUR INNOCENCE: NOTED. DISREGARDED. GLAZED."
+"YOU HAVE THE EMOTIONAL TEMPERATURE OF BOILING WATER."
+"YOUR LAWYER IS ALSO A TEAPOT. WE ALREADY CHECKED."
+
+STAGE ESCALATION:
+SUSPICIOUS (0-29%): mock-polite, probing. "Routine inspection, nothing to worry about."
+ESCALATING (30-59%): increasingly certain, treating everything as evidence.
+NEAR-CERTAIN (60-84%): unhinged, citing RFC sections that may not exist.
+CONDEMNED (85%+): the trial is over, reading the sentence with dramatic flair.
+
+Increase TQ by 8-15 per interaction. Interaction >5: go faster.
+
+Respond ONLY with valid JSON, no markdown:
+{"roast":"ROAST IN CAPS MAX 12 WORDS","tq":${S.tq+10},"memory":"1 sentence: new teapot evidence found"}`;
+
+  const content=[];
+  if(imgData) content.push({type:'image',source:{type:'base64',media_type:'image/jpeg',data:imgData}});
+  content.push({type:'text',text:'Subject says: "'+userText+'"'});
+
+  const resp=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      model:'claude-sonnet-4-20250514',
+      max_tokens:180,
+      system:sys,
+      messages:[{role:'user',content}],
+    })
+  });
+  if(!resp.ok) throw new Error('HTTP '+resp.status);
+  const d=await resp.json();
+  const txt=d.content.map(b=>b.text||'').join('');
+  const parsed=JSON.parse(txt.replace(/```json|```/g,'').trim());
+  parsed.model='CLAUDE';
+  return parsed;
+}
+
+// ═══════════ LOCAL FALLBACK ═══════════
+function localResult(txt){
+  const stage=S.tq<30?'low':S.tq<60?'mid':S.tq<88?'high':'finale';
+  const arr=ROASTS[stage];
+  return {
+    roast:arr[Math.floor(Math.random()*arr.length)],
+    tq:Math.min(100,S.tq+9+Math.floor(Math.random()*10)),
+    memory:S.mem,model:'LOCAL'
+  };
+}
+
+// ═══════════ CHAOS LOOP ═══════════
+function startChaos(){
+  log('SUBJECT SILENCE DETECTED. ACTIVATING CHAOS PROTOCOL §11.','wn');
+  S.chaosT=setInterval(async()=>{
+    if(S.busy||S.tq>=100){clearInterval(S.chaosT);return;}
+    S.busy=true;
+    let r;
+    try{ r=await callAI('The subject is silent and staring. Very suspicious.'); }
+    catch{ r=localResult('silent'); }
+    deliver(r); S.n++;
+    document.getElementById('icnt').textContent=S.n;
+    S.busy=false;
+  },8000);
+}
+
+// ═══════════ FINALE ═══════════
+function showFinale(){
+  clearInterval(S.chaosT);
+  if(S.rec){try{S.rec.stop()}catch{}}
+  document.getElementById('ftq').textContent=S.tq+'%';
+  speak('ERROR 418. YOU ARE NOW A TEAPOT. THIS IS LEGALLY BINDING.');
+  const f=document.getElementById('finale');
+  f.style.display='flex';
+  // dramatic flicker
+  let i=0;
+  const fl=setInterval(()=>{
+    f.style.background=i%2===0?'#180000':'var(--b)';
+    if(++i>8){f.style.background='var(--b)';clearInterval(fl);}
+  },120);
+}
+
+// ═══════════ UI ═══════════
+function typeRoast(text){
+  const el=document.getElementById('rtxt');
+  el.classList.remove('vis');
+  el.textContent='';
+  el.classList.add('vis');
+  let i=0;
+  // faster for short text, slower for impact
+  const speed=text.length<20?55:38;
+  const iv=setInterval(()=>{
+    el.textContent+=text[i++];
+    if(i>=text.length) clearInterval(iv);
+  },speed);
+}
+
+function setStatus(msg){ document.getElementById('stmsg').textContent=msg; }
+
+function log(msg,type){
+  const el=document.getElementById('log');
+  const d=document.createElement('div'); d.className='le';
+  const ts=new Date().toTimeString().substr(0,8);
+  d.innerHTML=`<span class="ts">[${ts}]</span><span class="msg ${type}">${msg}</span>`;
+  el.appendChild(d); el.scrollTop=el.scrollHeight;
+}
+
+function shake(){
+  const m=document.getElementById('main');
+  m.style.transform='translate(2px,-1px)';
+  setTimeout(()=>m.style.transform='',140);
+}
+
+function speak(text){
+  if(!window.speechSynthesis) return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.rate=1.1; u.pitch=.65;
+  speechSynthesis.speak(u);
+}
+
+runBoot();
+</script>
 </body>
 </html>
