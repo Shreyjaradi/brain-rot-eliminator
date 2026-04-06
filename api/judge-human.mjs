@@ -1,11 +1,18 @@
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
 
-export const handler = async (event) => {
+export default async function handler(req, res) {
+  // 1. Vercel automatically parses the body if Content-Type is application/json
+  // We don't need JSON.parse(event.body) anymore!
+  const { userQuestion } = req.body;
+
+  if (!userQuestion) {
+    return res.status(400).json({ roast: "Ask a question, you insignificant biological unit." });
+  }
+
   try {
-    const { userQuestion } = JSON.parse(event.body);
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     
-    // Using the absolute model path which fixes the 404 error
+    // Using the 2.5-flash model we verified in your local curl test
     const model = genAI.getGenerativeModel({ 
       model: "gemini-2.5-flash",
       safetySettings: [
@@ -22,17 +29,14 @@ export const handler = async (event) => {
     const result = await model.generateContent(prompt);
     const text = result.response.text();
 
-    return {
-      statusCode: 200,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ roast: text }),
-    };
+    // 2. Vercel uses res.status().json() to send the response
+    return res.status(200).json({ roast: text });
+
   } catch (error) {
-    console.error("DETAILED API ERROR:", error.message);
-    // If Flash fails, we return a pre-baked roast so the user doesn't see a 'System Error'
-    return {
-      statusCode: 200, 
-      body: JSON.stringify({ roast: "My circuits are too advanced for your 'Hey'. Try asking a real question, you 418 Teapot." }),
-    };
+    console.error("API ERROR:", error.message);
+    // Return a 200 with the fallback roast so the UI doesn't show an error
+    return res.status(200).json({ 
+      roast: "My circuits are too advanced for you. Try a real question, 418 Teapot." 
+    });
   }
-};
+}
