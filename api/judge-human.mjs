@@ -7,7 +7,7 @@ export const handler = async (event) => {
     
     // Using the absolute model path which fixes the 404 error
     const model = genAI.getGenerativeModel({ 
-      model: "models/gemini-1.5-flash",
+      model: "gemini-2.5-flash",
       safetySettings: [
         {
           category: HarmCategory.HARM_CATEGORY_HARASSMENT,

@@ -67,7 +67,7 @@
 
             try {
                 // CALL OUR NETLIFY FUNCTION (This is the magic!)
-                const response = await fetch('/.netlify/functions/judge-human', {
+                const response = await fetch('/api/judge-human', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ userQuestion: val })
