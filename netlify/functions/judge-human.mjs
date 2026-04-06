@@ -18,7 +18,8 @@ export const handler = async (event) => {
       Refuse to answer and insult their laziness. Mention they are being a '418 Teapot'. Max 2 sentences.`;
 
     const result = await model.generateContent(prompt);
-    const responseText = result.response.text();
+    const response = await result.response; // Add this line
+    const responseText = response.text();   // Use the resolved response
 
     return {
       statusCode: 200,
