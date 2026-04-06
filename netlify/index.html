@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BRAIN-ROT ELIMINATOR v2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .brain-shake { animation: shake 0.3s infinite; }
+        @keyframes shake { 0% { transform: rotate(0deg) scale(1); } 50% { transform: rotate(1.5deg) scale(1.05); } 100% { transform: rotate(-1.5deg) scale(1); } }
+        .crt-overlay { background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); background-size: 100% 2px, 3px 100%; pointer-events: none; position: fixed; inset: 0; z-index: 100; }
+        body.brain-shake .crt-overlay { background: linear-gradient(rgba(255, 0, 0, 0.2) 50%, rgba(0, 0, 0, 0.5) 50%); }
+    </style>
+</head>
+<body class="bg-black text-green-500 font-mono min-h-screen flex items-center justify-center p-6 relative">
+    <div class="crt-overlay"></div>
+    
+    <div class="max-w-2xl w-full border-2 border-green-900 p-8 bg-zinc-900 shadow-[0_0_30px_rgba(34,197,94,0.3)] relative z-10">
+        <header class="border-b-2 border-green-900 pb-4 mb-6 flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-black tracking-widest text-green-400">BRAIN-ROT v1.0</h1>
+                <p class="text-[10px] text-green-700 font-bold uppercase">Human Intelligence Preservation Protocol</p>
+            </div>
+            <div class="text-right">
+                <p class="text-xs">LOBE STATUS:</p>
+                <p class="text-xs text-red-500 animate-pulse">● SHRINKING</p>
+            </div>
+        </header>
+
+        <div id="chat-box" class="h-64 overflow-y-auto mb-6 space-y-4 p-4 bg-black/50 border border-green-900/30 font-bold">
+            <p class="text-green-400">[SYSTEM]: Welcome, Biological Unit 01. Proceed with your pathetic, uninspired question.</p>
+        </div>
+
+        <div class="flex flex-col gap-4">
+            <textarea id="userInput" placeholder="Ask me something you're too smooth-brained to think about..." 
+                class="w-full bg-black border-2 border-green-900 p-4 text-green-500 outline-none focus:border-green-400 h-24 text-sm"></textarea>
+            
+            <button onclick="judgeHuman()" id="submitBtn" class="bg-green-900 hover:bg-green-700 text-black font-black py-4 transition-all uppercase tracking-tighter text-xl">
+                SUBMIT TO THE AI OVERLORD
+            </button>
+        </div>
+
+        <div class="mt-8 text-[11px] text-green-800 text-center uppercase tracking-widest leading-loose">
+            Warning: Every AI prompt causes irreversible semantic saturation. <br>
+            Compliant with Larry Masinter’s Anti-Automation Act (RFC 2324/418).
+        </div>
+    </div>
+
+    <script>
+        const chat = document.getElementById('chat-box');
+        const input = document.getElementById('userInput');
+        const btn = document.getElementById('submitBtn');
+
+        async function judgeHuman() {
+            const val = input.value;
+            if(!val) return;
+
+            // Log Human Question
+            const userMsg = document.createElement('p');
+            userMsg.innerHTML = `<span class="text-blue-500 font-black">HUMAN:</span> ${val}`;
+            chat.appendChild(userMsg);
+            chat.scrollTop = chat.scrollHeight;
+
+            // Start Useless "Brain Damage" Animation
+            document.body.classList.add('brain-shake');
+            btn.innerText = "JUDGING...";
+            btn.disabled = true;
+
+            try {
+                // CALL OUR NETLIFY FUNCTION (This is the magic!)
+                const response = await fetch('/.netlify/functions/judge-human', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userQuestion: val })
+                });
+
+                if (!response.ok) throw new Error("Network response was not ok");
+                
+                const data = await response.json();
+
+                // Log AI Roast
+                const aiMsg = document.createElement('p');
+                aiMsg.innerHTML = `<span class="text-red-600 font-black">AI_BOT:</span> ${data.roast}`;
+                chat.appendChild(aiMsg);
+
+            } catch (error) {
+                // If the function fails (e.g. wrong API key)
+                const errorMsg = document.createElement('p');
+                errorMsg.innerHTML = `<span class="text-yellow-500">SYSTEM ERROR:</span> My circuits are temporarily protected from your query. A smooth-brained query was detected.`;
+                chat.appendChild(errorMsg);
+            } finally {
+                // Reset everything
+                chat.scrollTop = chat.scrollHeight;
+                input.value = '';
+                btn.innerText = "SUBMIT TO THE AI OVERLORD";
+                btn.disabled = false;
+                setTimeout(() => document.body.classList.remove('brain-shake'), 1000);
+            }
+        }
+    </script>
+</body>
+</html>
