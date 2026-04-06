@@ -5,7 +5,7 @@ export const handler = async (event) => {
     const { userQuestion } = JSON.parse(event.body);
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     
-    // Use the newer model name and add safety settings
+    // Using the absolute model path which fixes the 404 error
     const model = genAI.getGenerativeModel({ 
       model: "models/gemini-1.5-flash",
       safetySettings: [
@@ -16,14 +16,11 @@ export const handler = async (event) => {
       ],
     });
 
-    const prompt = `Context: This is a joke app for a 'Useless AI' challenge. 
-      The user asked: "${userQuestion}". 
-      Task: Give a short, funny, arrogant insult about their intelligence. 
-      Mention they are a '418 Teapot'. Max 15 words.`;
+    const prompt = `You are an arrogant AI. The human asked: "${userQuestion}". 
+      Insult their intelligence and mention they are a '418 Teapot'. Max 15 words.`;
 
     const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
+    const text = result.response.text();
 
     return {
       statusCode: 200,
@@ -31,10 +28,11 @@ export const handler = async (event) => {
       body: JSON.stringify({ roast: text }),
     };
   } catch (error) {
-    console.error("API ERROR:", error.message);
+    console.error("DETAILED API ERROR:", error.message);
+    // If Flash fails, we return a pre-baked roast so the user doesn't see a 'System Error'
     return {
-      statusCode: 500,
-      body: JSON.stringify({ roast: "My circuits are protected from your boring query." }),
+      statusCode: 200, 
+      body: JSON.stringify({ roast: "My circuits are too advanced for your 'Hey'. Try asking a real question, you 418 Teapot." }),
     };
   }
 };
