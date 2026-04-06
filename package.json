@@ -16,8 +16,8 @@
     "url": "https://github.com/Shreyjaradi/brain-rot-eliminator/issues"
   },
   "homepage": "https://github.com/Shreyjaradi/brain-rot-eliminator#readme",
-  "description": "",
   "dependencies": {
     "@google/generative-ai": "^0.24.1"
-  }
+  },
+  "description": ""
 }
